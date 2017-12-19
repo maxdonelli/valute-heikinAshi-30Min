@@ -57,3 +57,59 @@ if condition1 and marketposition = 0 then
 if date <> date[1] then sonoAmercato= false ; // reset flag ingresso a mercato
 
 setexitonclose;
+
+{
+prove   su grafico heikin ashi  30 min
+
+inserimento orari di ingresso/uscita da ottimizzare
+
+- inserimento filtro supertrend
+
+}
+
+
+
+
+once ClearPrintLog; 
+
+input: perdita(30), guadagno(100),quantita(200000), oraInizio(930), oraFine(1630), st1(9), st2(1), st3(9);
+
+
+vars : double prezzoOre14(0.0), livelloUp(0.0), livelloDown(0.0),pip(0), bool sonoAmercato(false);
+
+
+//la variabile pip  indispensabile per far funzionare la function supertrend ( non accetta un valore diretto!)
+
+
+
+condition1 = time >= oraInizio and Time <= oraFine and sonoAmercato = False ;  // condizioni per ingresso a mercato
+
+ if condition1  and marketposition = 0 then
+ 	
+ 				begin
+ 				if close[1] > close[2]  and close > close[1] and close*1000 > (SuperTrend(st1,st2,st3,pip)*1000)   then buy quantita share next bar at market  ; 
+ 				
+ 				if Close[1] < close[2]  and close < close[1] and close *1000 < (SuperTrend(st1,st2,st3,pip)*1000)  then sellshort quantita share next bar at market;	
+ 
+ 					
+ 				end;
+ 				
+
+
+
+		
+
+if date <> date[1] then sonoAmercato= false ;   // reset flag ingresso a mercato
+
+
+ if marketposition <> 0 then   // se sono a mercato fisso loss e profit e imposto il flag per un solo trade/giorno
+ 	
+ 	begin
+ 	sonoAmercato= True;
+ 	setstoploss(perdita);
+ 	 if guadagno > 0 then setprofittarget(guadagno);
+ 	
+ 	
+ 	end;
+
+setexitonclose;
